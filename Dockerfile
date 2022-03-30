@@ -1,4 +1,7 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.8-slim-bullseye as base
+
+# ----- builder -----
+FROM base as builder
 
 WORKDIR /usr/src/app
 
@@ -8,7 +11,19 @@ ENV PYTHONUNBUFFERED 1
 # install dependencies
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
 RUN pip install -r requirements.txt
+
+
+# ----- final -----
+FROM base
+
+WORKDIR /usr/src/app
+
+# copy dependencies
+COPY --from=builder /usr/src/app/wheels /wheels
+RUN pip install --no-cache /wheels/*
 
 # copy project
 COPY . .
