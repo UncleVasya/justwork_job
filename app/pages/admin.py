@@ -1,5 +1,6 @@
 from adminsortable2.admin import SortableInlineAdminMixin
 from dal import autocomplete
+import djhacker
 from django import forms
 from django.contrib import admin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, \
@@ -32,16 +33,16 @@ class ContentPieceAdmin(PolymorphicParentModelAdmin):
     child_models = (TextPiece, AudioPiece, VideoPiece)
     search_fields = ['title__istartswith']
 
+    def get_model_perms(self, request):
+        return {}  # hide this from admin panel
 
-class ContentPieceInlineForm(forms.ModelForm):
-    piece = forms.ModelChoiceField(
-        queryset=ContentPiece.objects.all(),
-        widget=autocomplete.ModelSelect2(url='pages:cpiece-autocomplete')
-    )
 
-    class Meta:
-        model = ContentPiece
-        fields = '__all__'
+djhacker.formfield(
+    Page.pieces.through.piece,
+    forms.ModelChoiceField,
+    queryset=ContentPiece.objects.all(),
+    widget=autocomplete.ModelSelect2(url='pages:cpiece-autocomplete')
+)
 
 
 class ContentPieceInline(SortableInlineAdminMixin, admin.StackedInline):
@@ -55,7 +56,6 @@ class ContentPieceInline(SortableInlineAdminMixin, admin.StackedInline):
         model = VideoPiece
 
     model = Page.pieces.through
-    form = ContentPieceInlineForm
     child_inlines = (TextAdminInline, AudioAdminInline, VideoAdminInline)
 
 
@@ -65,6 +65,7 @@ class PageAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
     inlines = (ContentPieceInline,)
 
 
+admin.site.register(ContentPiece, ContentPieceAdmin)
 admin.site.register(TextPiece, TextPieceAdmin)
 admin.site.register(AudioPiece, AudioPieceAdmin)
 admin.site.register(VideoPiece, VideoPieceAdmin)
