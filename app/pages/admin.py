@@ -1,6 +1,6 @@
 from django.contrib import admin
 from polymorphic.admin import PolymorphicParentModelAdmin, PolymorphicChildModelAdmin, \
-    StackedPolymorphicInline, PolymorphicInlineSupportMixin
+                              StackedPolymorphicInline, PolymorphicInlineSupportMixin
 from app.pages.models import ContentPiece, TextPiece, AudioPiece, VideoPiece, Page
 
 
@@ -25,7 +25,7 @@ class ContentPieceAdmin(PolymorphicParentModelAdmin):
     child_models = (TextPiece, AudioPiece, VideoPiece)
 
 
-class ContentPieceInline(StackedPolymorphicInline):
+class ContentPieceInline(admin.StackedInline):
     class TextAdminInline(StackedPolymorphicInline.Child):
         model = TextPiece
 
@@ -40,6 +40,7 @@ class ContentPieceInline(StackedPolymorphicInline):
 
 
 class PageAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
+    model = Page
     inlines = (ContentPieceInline,)
 
 

@@ -21,5 +21,10 @@ class VideoPiece(ContentPiece):
 
 
 class Page(models.Model):
-    pieces = models.ManyToManyField(ContentPiece)
+    pieces = models.ManyToManyField(ContentPiece, through='PieceOnPage')
+
+
+class PieceOnPage(models.Model):
+    page = models.ForeignKey(Page, on_delete=models.CASCADE)
+    piece = models.ForeignKey(ContentPiece, on_delete=models.CASCADE)
 
