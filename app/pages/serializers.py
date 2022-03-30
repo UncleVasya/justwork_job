@@ -32,7 +32,9 @@ class CPiecePolymorphicSerializer(PolymorphicSerializer):
     }
 
 
-class PageSerializer(serializers.HyperlinkedModelSerializer):
+class PageSerializer(serializers.ModelSerializer):
+    pieces = CPiecePolymorphicSerializer(many=True)
+
     class Meta:
         model = Page
         fields = '__all__'
