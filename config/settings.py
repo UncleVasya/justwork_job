@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'polymorphic',
     'adminsortable2',
+    'rest_framework',
     'app.pages.apps.PagesConfig'
 ]
 
