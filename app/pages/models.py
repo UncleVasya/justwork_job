@@ -6,6 +6,9 @@ class ContentPiece(PolymorphicModel):
     title = models.CharField(max_length=255)
     counter = models.PositiveIntegerField(default=0, blank=True)
 
+    class Meta(object):
+        unique_together = ('title', 'polymorphic_ctype_id')
+
 
 class TextPiece(ContentPiece):
     text = models.TextField()
