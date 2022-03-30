@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableInlineAdminMixin
 from dal import autocomplete
 from django import forms
 from django.contrib import admin
@@ -13,14 +14,17 @@ class BaseContentPiece(PolymorphicChildModelAdmin):
 
 class TextPieceAdmin(BaseContentPiece):
     base_model = TextPiece
+    show_in_index = True
 
 
 class AudioPieceAdmin(BaseContentPiece):
     base_model = AudioPiece
+    show_in_index = True
 
 
 class VideoPieceAdmin(BaseContentPiece):
     base_model = VideoPiece
+    show_in_index = True
 
 
 class ContentPieceAdmin(PolymorphicParentModelAdmin):
@@ -40,7 +44,7 @@ class ContentPieceInlineForm(forms.ModelForm):
         fields = '__all__'
 
 
-class ContentPieceInline(admin.StackedInline):
+class ContentPieceInline(SortableInlineAdminMixin, admin.StackedInline):
     class TextAdminInline(StackedPolymorphicInline.Child):
         model = TextPiece
 
@@ -64,6 +68,5 @@ class PageAdmin(PolymorphicInlineSupportMixin, admin.ModelAdmin):
 admin.site.register(TextPiece, TextPieceAdmin)
 admin.site.register(AudioPiece, AudioPieceAdmin)
 admin.site.register(VideoPiece, VideoPieceAdmin)
-admin.site.register(ContentPiece, ContentPieceAdmin)
 
 admin.site.register(Page, PageAdmin)

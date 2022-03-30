@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'polymorphic',
+    'adminsortable2',
     'app.pages.apps.PagesConfig'
 ]
 

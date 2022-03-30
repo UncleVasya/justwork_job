@@ -4,7 +4,7 @@ from polymorphic.models import PolymorphicModel
 
 class ContentPiece(PolymorphicModel):
     title = models.CharField(max_length=255)
-    counter = models.PositiveIntegerField()
+    counter = models.PositiveIntegerField(default=0, blank=True)
 
 
 class TextPiece(ContentPiece):
@@ -40,4 +40,8 @@ class Page(models.Model):
 class PieceOnPage(models.Model):
     page = models.ForeignKey(Page, on_delete=models.CASCADE)
     piece = models.ForeignKey(ContentPiece, on_delete=models.CASCADE)
+    piece_order = models.PositiveIntegerField(default=0, blank=False, null=False)
+
+    class Meta(object):
+        ordering = ['piece_order']
 
