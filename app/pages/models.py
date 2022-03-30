@@ -10,18 +10,31 @@ class ContentPiece(PolymorphicModel):
 class TextPiece(ContentPiece):
     text = models.TextField()
 
+    def __str__(self):
+        return f'Text: {self.title}'
+
 
 class AudioPiece(ContentPiece):
     bitrate = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f'Audio: {self.title}'
 
 
 class VideoPiece(ContentPiece):
     video_url = models.URLField()
     subtitles_url = models.URLField()
 
+    def __str__(self):
+        return f'Video: {self.title}'
+
 
 class Page(models.Model):
+    title = models.CharField(max_length=255)
     pieces = models.ManyToManyField(ContentPiece, through='PieceOnPage')
+
+    def __str__(self):
+        return self.title
 
 
 class PieceOnPage(models.Model):
