@@ -35,9 +35,14 @@ class CPiecePolymorphicSerializer(PolymorphicSerializer):
 
 class PageSerializer(ModelActionSerializer, serializers.HyperlinkedModelSerializer):
     id = serializers.ReadOnlyField()  # have to include this explicitly for some reason
-    pieces = CPiecePolymorphicSerializer(many=True)
+    pieces = serializers.SerializerMethodField()
 
     class Meta:
         model = Page
         fields = '__all__'
         action_fields = {'list': {'fields': ('id', 'title', 'url',)}}
+
+    def get_pieces(self, obj):
+        qs = obj.pieces.all().order_by('pieceonpage__piece_order')
+        return CPiecePolymorphicSerializer(qs, many=True, context=self.context).data
+
