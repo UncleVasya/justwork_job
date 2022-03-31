@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  runserver:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
@@ -26,7 +26,7 @@ services:
     env_file:
       - .env.dev
     depends_on:
-      - web
+      - runserver
       - redis
   redis:
     image: redis
@@ -38,9 +38,18 @@ services:
     env_file:
       - .env.dev
     depends_on:
-      - web
+      - runserver
       - redis
       - celery_worker
+  autotests:
+    build: .
+    command: python manage.py test app
+    volumes:
+      - .:/usr/src/app/
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
 
 volumes:
   postgres_data:

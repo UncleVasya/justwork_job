@@ -88,8 +88,7 @@ class ApiOptimizationTests(APITestCase, URLPatternsTestCase):
             pieces += add_random_data.Command.create_random_audios(1, cls.pieces_num)
             pieces += add_random_data.Command.create_random_videos(1, cls.pieces_num)
             page.pieces.set(pieces)
-            print(len(page.pieces.all()))
-            cls.page = page
+        cls.page = page
 
     def test_page_detail_optimized(self, *args, **kwargs):
         url = reverse('page-detail', kwargs={'pk': self.page.pk})
