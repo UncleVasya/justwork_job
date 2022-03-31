@@ -8,6 +8,7 @@ class ContentPiece(PolymorphicModel):
 
     class Meta(object):
         unique_together = ('title', 'polymorphic_ctype_id')
+        ordering = ['-id']
 
 
 class TextPiece(ContentPiece):
@@ -35,6 +36,9 @@ class VideoPiece(ContentPiece):
 class Page(models.Model):
     title = models.CharField(max_length=255)
     pieces = models.ManyToManyField(ContentPiece, through='PieceOnPage')
+
+    class Meta(object):
+        ordering = ['-id']
 
     def __str__(self):
         return self.title
