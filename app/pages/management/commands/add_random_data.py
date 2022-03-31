@@ -13,46 +13,77 @@ class Command(BaseCommand):
         num = options['number']
 
         with transaction.atomic():
-            pieces = []
             try:
                 start = ContentPiece.objects.last().id + 1
             except AttributeError:
                 start = 1
 
-            # sadly bulk_create doesn't work for our models :(
-            for k in range(start, start + num):
-                obj = TextPiece.objects.create(
-                    title=f'{random.choice(["Tutorial", "News", "Article", "Movie review"])} {k}',
-                    text=f'bla bla bla {k}'
-                )
-                pieces.append(obj)
-
-            for k in range(start, start + num):
-                obj = AudioPiece.objects.create(
-                    title=f'{random.choice(["Song", "Lesson", "Podcast"])} {k}',
-                    bitrate=random.choice([96, 128, 256, 320])
-                )
-                pieces.append(obj)
-
-            for k in range(start, start + num):
-                obj = VideoPiece.objects.create(
-                    title=f'{random.choice(["Movie", "Tutorial", "Funny cats", "Game stream"])} {k}',
-                    video_url=f'https://justwork-tube.com/video/{k}',
-                    subtitles_url=f'https://justwork-tube.com/subtitles/{k}'
-                )
-                pieces.append(obj)
+            pieces = self.create_random_texts(start, num)
+            pieces += self.create_random_audios(start, num)
+            pieces += self.create_random_videos(start, num)
 
             # now create pages with random content
-            try:
-                start = Page.objects.last().id + 1
-            except AttributeError:
-                start = 1
+            self.create_pages_with_content(num, pieces)
 
-            for k in range(start, start + num):
-                obj = Page.objects.create(
-                    title=f'{random.choice(["Content by Vasya", "Stories by Vova", "Interesting stuff"])} {k}',
-                )
-                obj.pieces.set(
-                    random.choices(pieces,
-                                   k=random.choice(range(6)))
-                )
+    @staticmethod
+    def create_random_texts(start, num):
+        titles = ['Tutorial', 'News', 'Article', 'Movie review']
+
+        # sadly bulk_create doesn't work for our models :(
+        pieces = []
+        for k in range(start, start + num):
+            obj = TextPiece.objects.create(
+                title=f'{random.choice(titles)} {k}',
+                text=f'bla bla bla {k}'
+            )
+            pieces.append(obj)
+
+        return pieces
+
+    @staticmethod
+    def create_random_audios(start, num):
+        titles = ['Song', 'Lesson', 'Podcast']
+
+        pieces = []
+        for k in range(start, start + num):
+            obj = AudioPiece.objects.create(
+                title=f'{random.choice(titles)} {k}',
+                bitrate=random.choice([96, 128, 256, 320])
+            )
+            pieces.append(obj)
+
+        return pieces
+
+    @staticmethod
+    def create_random_videos(start, num):
+        titles = ['Movie', 'Tutorial', 'Funny cats', 'Game stream']
+
+        pieces = []
+        for k in range(start, start + num):
+            obj = VideoPiece.objects.create(
+                title=f'{random.choice(titles)} {k}',
+                video_url=f'https://justwork-tube.com/video/{k}',
+                subtitles_url=f'https://justwork-tube.com/subtitles/{k}'
+            )
+            pieces.append(obj)
+
+        return pieces
+
+    @staticmethod
+    def create_pages_with_content(num, content):
+        max_pieces_on_page = 6
+        titles = ['Content by Vasya', 'Stories by Vova', 'Interesting stuff']
+
+        try:
+            start = Page.objects.last().id + 1
+        except AttributeError:
+            start = 1
+
+        for k in range(start, start + num):
+            obj = Page.objects.create(
+                title=f'{random.choice(titles)} {k}',
+            )
+            obj.pieces.set(
+                random.choices(content,
+                               k=random.choice(range(max_pieces_on_page)))
+            )

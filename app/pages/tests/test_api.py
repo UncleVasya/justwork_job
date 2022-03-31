@@ -1,11 +1,11 @@
 from unittest.mock import patch
-import debug_toolbar
 from django.db import transaction, connection, connections
 from django.test.utils import CaptureQueriesContext
 from django.urls import path, include, reverse
 from rest_framework import routers, status
 from rest_framework.test import APITestCase, URLPatternsTestCase
 from app.pages import apiviews
+from app.pages.management.commands import add_random_data
 from app.pages.models import PieceOnPage, Page, TextPiece, AudioPiece
 
 
@@ -84,15 +84,11 @@ class ApiOptimizationTests(APITestCase, URLPatternsTestCase):
         # let's create a page with LOTS of content
         with transaction.atomic():
             page = Page.objects.create(title='test')
-            pieces = []
-            for k in range(cls.pieces_num):
-                p = TextPiece.objects.create(
-                    page=page,
-                    title=f'text {k}',
-                    text=f'bla bla'
-                )
-                pieces.append(p)
+            pieces = add_random_data.Command.create_random_texts(1, cls.pieces_num)
+            pieces += add_random_data.Command.create_random_audios(1, cls.pieces_num)
+            pieces += add_random_data.Command.create_random_videos(1, cls.pieces_num)
             page.pieces.set(pieces)
+            print(len(page.pieces.all()))
             cls.page = page
 
     def test_page_detail_optimized(self, *args, **kwargs):
