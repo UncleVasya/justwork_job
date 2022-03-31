@@ -23,8 +23,6 @@ RUN pip install -r requirements.txt
 # ----- final -----
 FROM base
 
-WORKDIR /usr/src/app
-
 # netcat to check for postgres readiness
 RUN apt-get update && apt-get install --no-install-recommends -y \
   netcat
@@ -38,4 +36,4 @@ COPY . .
 
 # run entrypoint.sh
 RUN chmod +x entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
