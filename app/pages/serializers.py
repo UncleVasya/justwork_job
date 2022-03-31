@@ -45,4 +45,3 @@ class PageSerializer(ModelActionSerializer, serializers.HyperlinkedModelSerializ
     def get_pieces(self, obj):
         qs = obj.pieces.all().order_by('pieceonpage__piece_order')
         return CPiecePolymorphicSerializer(qs, many=True, context=self.context).data
-
